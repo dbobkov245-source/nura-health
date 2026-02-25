@@ -30,8 +30,8 @@ const Navbar = () => {
   }, [])
 
   return (
-    <nav className={`navbar-floating fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full transition-all duration-300 ${scrolled ? 'scrolled' : 'bg-transparent'}`}>
-      <div className="flex items-center gap-8">
+    <nav className={`navbar-floating fixed top-4 md:top-6 left-4 right-4 md:left-1/2 md:-translate-x-1/2 z-50 px-4 md:px-6 py-2 md:py-3 rounded-full transition-all duration-300 ${scrolled ? 'scrolled' : 'bg-transparent'}`}>
+      <div className="flex items-center justify-between md:justify-normal gap-4 md:gap-8">
         <span className={`font-heading font-bold text-xl ${scrolled ? 'text-moss' : 'text-white'}`}>Nura Health</span>
         
         <div className="hidden md:flex items-center gap-6">
@@ -81,7 +81,7 @@ const Hero = () => {
   }, [])
 
   return (
-    <section ref={heroRef} className="relative h-screen min-h-[700px] flex items-end pb-20 px-8 overflow-hidden">
+    <section ref={heroRef} className="relative h-screen min-h-[700px] flex items-end pb-16 md:pb-20 px-4 md:px-8 overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -116,6 +116,8 @@ const Hero = () => {
 const Features = () => {
   const [activeCard, setActiveCard] = useState(0)
   const [typewriterText, setTypewriterText] = useState('')
+  const [isAnimating, setIsAnimating] = useState(false)
+  const cardsRef = useRef([])
   const messages = [
     'Оптимизация циркадного ритма...',
     'Анализ маркеров воспаления...',
@@ -123,15 +125,19 @@ const Features = () => {
     'Мониторинг эпигенетики...'
   ]
 
-  // Diagnostic Shuffler
+  // Diagnostic Shuffler с bounce анимацией
   const diagnosticLabels = ['Эпигенетический возраст', 'Микробиом скор', 'Оптимизация кортизола']
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveCard((prev) => (prev + 1) % 3)
+      if (!isAnimating) {
+        setIsAnimating(true)
+        setActiveCard((prev) => (prev + 1) % 3)
+        setTimeout(() => setIsAnimating(false), 600)
+      }
     }, 3000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isAnimating])
 
   // Typewriter effect
   useEffect(() => {
@@ -148,38 +154,62 @@ const Features = () => {
   const [selectedDay, setSelectedDay] = useState(2)
 
   return (
-    <section id="features" className="py-24 px-8 bg-cream">
+    <section id="features" className="py-24 px-4 md:px-8 bg-cream overflow-hidden">
       <div className="max-w-6xl mx-auto">
-        <h2 className="font-heading text-4xl md:text-5xl font-bold text-charcoal mb-16 text-center">
+        <h2 className="font-heading text-3xl md:text-5xl font-bold text-charcoal mb-12 md:mb-16 text-center">
           Точность в каждой детали
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {/* Card 1: Diagnostic Shuffler */}
-          <div className="feature-card bg-white rounded-[2rem] p-8 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="feature-card bg-white rounded-[2rem] p-6 md:p-8 shadow-lg">
+            <div className="flex items-center gap-3 mb-4 md:mb-6">
               <div className="w-10 h-10 rounded-full bg-moss/10 flex items-center justify-center">
                 <Dna className="text-moss" size={20} />
               </div>
               <span className="font-heading font-semibold text-charcoal">Интеллект аудита</span>
             </div>
             
-            <div className="relative h-40 mb-4">
-              {diagnosticLabels.map((label, idx) => (
-                <div 
-                  key={idx}
-                  className={`absolute inset-x-4 bg-moss/5 rounded-xl p-4 transition-all duration-500 ${idx === activeCard ? 'top-0 z-10' : idx === (activeCard + 1) % 3 ? 'top-2 z-0 opacity-50' : 'top-4 z-0 opacity-30'}`}
-                  style={{ transform: idx === activeCard ? 'translateY(0)' : `translateY(${idx === (activeCard + 1) % 3 ? -20 : -40}px)` }}
-                >
-                  <span className="font-data text-sm text-moss">{label}</span>
-                </div>
-              ))}
+            <div className="relative h-32 md:h-40 mb-4 overflow-hidden">
+              <div 
+                ref={el => cardsRef.current[0] = el}
+                className="absolute inset-x-2 md:inset-x-4 bg-moss/10 rounded-xl p-3 md:p-4"
+                style={{
+                  transform: `translateY(${activeCard === 0 ? '0%' : '-120%'})`,
+                  transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  opacity: activeCard === 0 ? 1 : 0.3
+                }}
+              >
+                <span className="font-data text-sm text-moss">{diagnosticLabels[0]}</span>
+              </div>
+              <div 
+                ref={el => cardsRef.current[1] = el}
+                className="absolute inset-x-2 md:inset-x-4 bg-moss/10 rounded-xl p-3 md:p-4"
+                style={{
+                  transform: `translateY(${activeCard === 1 ? '0%' : activeCard === 0 ? '120%' : '-120%'})`,
+                  transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  opacity: activeCard === 1 ? 1 : 0.3
+                }}
+              >
+                <span className="font-data text-sm text-moss">{diagnosticLabels[1]}</span>
+              </div>
+              <div 
+                ref={el => cardsRef.current[2] = el}
+                className="absolute inset-x-2 md:inset-x-4 bg-moss/10 rounded-xl p-3 md:p-4"
+                style={{
+                  transform: `translateY(${activeCard === 2 ? '0%' : '120%'})`,
+                  transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  opacity: activeCard === 2 ? 1 : 0.3
+                }}
+              >
+                <span className="font-data text-sm text-moss">{diagnosticLabels[2]}</span>
+              </div>
             </div>
             <p className="text-charcoal/60 text-sm">Циклическая диагностика биомаркеров в реальном времени</p>
           </div>
 
           {/* Card 2: Telemetry Typewriter */}
-          <div className="feature-card bg-white rounded-[2rem] p-8 shadow-lg">
+          <div className="feature-card bg-white rounded-[2rem] p-6 md:p-8 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-moss/10 flex items-center justify-center">
                 <Activity className="text-moss" size={20} />
@@ -200,7 +230,7 @@ const Features = () => {
           </div>
 
           {/* Card 3: Cursor Scheduler */}
-          <div className="feature-card bg-white rounded-[2rem] p-8 shadow-lg">
+          <div className="feature-card bg-white rounded-[2rem] p-6 md:p-8 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-moss/10 flex items-center justify-center">
                 <Brain className="text-moss" size={20} />
@@ -256,7 +286,7 @@ const Philosophy = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} id="philosophy" className="py-32 px-8 bg-charcoal relative overflow-hidden">
+    <section ref={sectionRef} id="philosophy" className="py-20 md:py-32 px-4 md:px-8 bg-charcoal relative overflow-hidden">
       {/* Parallax Background */}
       <div className="absolute inset-0 opacity-20">
         <img 
@@ -266,12 +296,12 @@ const Philosophy = () => {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto relative z-10 text-center">
-        <p className="philosophy-text font-heading text-xl text-white/60 mb-4">Современная медицина спрашивает:</p>
-        <p className="philosophy-text font-heading text-3xl md:text-4xl text-white/60 mb-12">Что не так с вашим здоровьем?</p>
+      <div className="max-w-4xl mx-auto relative z-10 text-center px-4">
+        <p className="philosophy-text font-heading text-lg md:text-xl text-white/60 mb-4">Современная медицина спрашивает:</p>
+        <p className="philosophy-text font-heading text-2xl md:text-4xl text-white/60 mb-8 md:mb-12">Что не так с вашим здоровьем?</p>
         
-        <p className="philosophy-text font-drama text-5xl md:text-7xl text-clay mb-4">Мы спрашиваем:</p>
-        <p className="philosophy-text font-drama text-5xl md:text-7xl text-white">Что <span className="text-clay">оптимально</span>?</p>
+        <p className="philosophy-text font-drama text-3xl md:text-5xl lg:text-7xl text-clay mb-4">Мы спрашиваем:</p>
+        <p className="philosophy-text font-drama text-3xl md:text-5xl lg:text-7xl text-white">Что <span className="text-clay">оптимально</span>?</p>
       </div>
     </section>
   )
@@ -310,23 +340,23 @@ const Protocol = () => {
   ]
 
   return (
-    <section id="protocol" className="py-32 px-8 bg-cream">
+    <section id="protocol" className="py-20 md:py-32 px-4 md:px-8 bg-cream">
       <div className="max-w-4xl mx-auto">
-        <h2 className="font-heading text-4xl md:text-5xl font-bold text-charcoal mb-16 text-center">
+        <h2 className="font-heading text-3xl md:text-5xl font-bold text-charcoal mb-12 md:mb-16 text-center">
           Протокол
         </h2>
 
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
           {steps.map((step, idx) => (
             <div 
               key={idx}
               ref={el => cardsRef.current[idx] = el}
-              className="bg-white rounded-[2rem] p-8 shadow-lg flex items-start gap-6 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-[2rem] p-6 md:p-8 shadow-lg flex items-start gap-4 md:gap-6 hover:shadow-xl transition-shadow"
             >
-              <span className="font-data text-4xl text-clay font-bold">{step.num}</span>
+              <span className="font-data text-3xl md:text-4xl text-clay font-bold">{step.num}</span>
               <div>
-                <h3 className="font-heading text-2xl font-bold text-charcoal mb-2">{step.title}</h3>
-                <p className="text-charcoal/60">{step.desc}</p>
+                <h3 className="font-heading text-xl md:text-2xl font-bold text-charcoal mb-2">{step.title}</h3>
+                <p className="text-charcoal/60 text-sm md:text-base">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -345,17 +375,17 @@ const Pricing = () => {
   ]
 
   return (
-    <section id="pricing" className="py-24 px-8 bg-cream">
+    <section id="pricing" className="py-20 md:py-24 px-4 md:px-8 bg-cream">
       <div className="max-w-5xl mx-auto">
-        <h2 className="font-heading text-4xl md:text-5xl font-bold text-charcoal mb-16 text-center">
+        <h2 className="font-heading text-3xl md:text-5xl font-bold text-charcoal mb-12 md:mb-16 text-center">
           Выберите план
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {plans.map((plan, idx) => (
             <div 
               key={idx}
-              className={`relative rounded-[2rem] p-8 ${plan.popular ? 'bg-moss text-white scale-105 shadow-xl' : 'bg-white shadow-lg'}`}
+              className={`relative rounded-[2rem] p-6 md:p-8 ${plan.popular ? 'bg-moss text-white md:scale-105 shadow-xl' : 'bg-white shadow-lg'}`}
             >
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-clay text-white px-4 py-1 rounded-full text-xs font-heading font-semibold">
@@ -390,11 +420,11 @@ const Pricing = () => {
 
 // Footer
 const Footer = () => (
-  <footer className="bg-charcoal rounded-t-[4rem] px-8 py-16">
+  <footer className="bg-charcoal rounded-t-[2rem] md:rounded-t-[4rem] px-4 md:px-8 py-12 md:py-16">
     <div className="max-w-5xl mx-auto">
-      <div className="grid md:grid-cols-4 gap-12 mb-12">
+      <div className="grid md:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
         <div>
-          <span className="font-heading font-bold text-2xl text-white">Nura Health</span>
+          <span className="font-heading font-bold text-xl md:text-2xl text-white">Nura Health</span>
           <p className="text-white/60 mt-2 text-sm">Точное долголетие, основанное на науке</p>
         </div>
         
@@ -441,7 +471,7 @@ const Footer = () => (
 // Main App
 function App() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <NoiseOverlay />
       <Navbar />
       <main>
