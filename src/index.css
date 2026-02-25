@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --moss: #2E4036;
+  --clay: #CC5833;
+  --cream: #F2F0E9;
+  --charcoal: #1A1A1A;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--cream);
+  color: var(--charcoal);
+  overflow-x: hidden;
+}
+
+/* Global Noise Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+}
+
+.noise-overlay svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Magnetic Button */
+.magnetic-btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.magnetic-btn:hover {
+  transform: scale(1.03);
+}
+
+.magnetic-btn .btn-bg {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  transition: left 0.3s ease;
+  z-index: 0;
+}
+
+.magnetic-btn:hover .btn-bg {
+  left: 0;
+}
+
+.magnetic-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating Island Navbar */
+.navbar-floating {
+  transition: all 0.4s ease;
+}
+
+.navbar-floating.scrolled {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(46, 64, 54, 0.1);
+}
+
+/* GSAP Animation Classes */
+.gsap-fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.gsap-fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card Hover Effects */
+.feature-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--moss);
+  border-radius: 4px;
+}
+
+/* Typography */
+.font-drama {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+}
+
+.font-data {
+  font-family: 'IBM Plex Mono', monospace;
+}
